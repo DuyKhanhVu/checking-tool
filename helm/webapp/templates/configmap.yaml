@@ -1,0 +1,12 @@
+{{- if .Values.configmap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "web-app.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "web-app.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  {{ toYaml .Values.configmap.data | indent 2 | trim }}
+{{- end }}

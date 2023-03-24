@@ -1,0 +1,72 @@
+# app name, for example user-api, dashboard, log-ingestion-gateway, ...
+nameOverride: ""
+
+# name of k8s resource, usually used as ID, i.e. ks-user-api, fossil-dashboard, ...
+fullnameOverride: ""
+
+# Deployment replica
+replicas: 1
+
+# config for main web-app here. web-app will have Container structure
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.10/#container-v1-core
+webapp:
+  image:
+    repository: vuduykhanh3998/data-checking-tool
+    tag: v0.0.1-beta2
+    pullPolicy: Always
+  env:
+    - name: DRUID_BASE_URL
+      value: http://druid-router:8888/druid/v2/sql
+      
+  SUPERSET_HOST: 
+  resources: {}
+  ports:
+    - name: http
+      containerPort: 5000
+
+service:
+  type: NodePort 
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http
+      protocol: TCP
+      nodePort:
+        http: 30362
+
+
+# for sidecar containers, just define a mapping with Container structure
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.10/#container-v1-core
+#my-sidecar:
+#  image:
+#    repository: fluent/fluentd
+#    tag: stable
+#    pullPolicy: IfNotPresent
+#  resources: {}
+
+# Uncomment below config for ingress
+ingress: {}
+#  annotations: {}
+#    kubernetes.io/ingress.class: nginx
+#  path: /
+#  hosts:
+#    - chart-example.local
+
+nodeSelector:
+  project: "miniapp"
+
+tolerations:
+  - key: "project"
+    operator: "Equal"
+    value: "miniapp"
+    effect: "NoSchedule"
+
+affinity: {}
+
+volumes: []
+
+configmap: {}
+#  data:
+#    somefile.ext: |
+#      file content1
+#      file content2
